@@ -16,9 +16,11 @@
             appearance: none;
             width: 20px;
             height: 20px;
-            background: #4f46e5;
+            background: #22d3ee;
             cursor: pointer;
             border-radius: 50%;
+            border: 2px solid #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.15);
         }
     </style>
 </head>
@@ -26,12 +28,16 @@
     <div id="root"></div>
     <script type="text/babel">
         const App = () => {
-            const [inputs, setInputs] = React.useState({ rm: 6, lstat: 10, ptratio: 18 });
+            const [inputs, setInputs] = React.useState({ rm: 6.2, lstat: 12, nox: 0.5 });
             const [price, setPrice] = React.useState(0);
-            const weights = { intercept: 18.3908, rm: 4.4552, lstat: -0.5239, ptratio: -0.9052 };
+            const weights = { intercept: -0.7667, rm: 5.1243, lstat: -0.6229, nox: -1.8456 };
 
             React.useEffect(() => {
-                const calculatedPrice = weights.intercept + (inputs.rm * weights.rm) + (inputs.lstat * weights.lstat) + (inputs.ptratio * weights.ptratio);
+                const calculatedPrice =
+                    weights.intercept +
+                    inputs.rm * weights.rm +
+                    inputs.lstat * weights.lstat +
+                    inputs.nox * weights.nox;
                 setPrice(Math.max(0, calculatedPrice));
             }, [inputs]);
 
@@ -41,7 +47,7 @@
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10 shadow-inner">
                     <div className="flex items-center justify-between text-sm mb-2">
                         <p className="font-semibold text-white">{label}</p>
-                        <span className="text-indigo-300 font-bold">{inputs[name]}{suffix}</span>
+                        <span className="text-cyan-200 font-bold">{inputs[name]}{suffix}</span>
                     </div>
                     <input
                         type="range"
@@ -59,19 +65,19 @@
 
             return (
                 <div className="relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.25),_transparent_30%)]" aria-hidden></div>
+                    <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.25),_transparent_30%)]" aria-hidden></div>
                     <div className="max-w-6xl mx-auto px-6 py-10 relative z-10">
                         <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
                             <div>
-                                <p className="uppercase tracking-[0.25em] text-xs text-indigo-200 mb-2">Predictive Insights</p>
+                                <p className="uppercase tracking-[0.25em] text-xs text-cyan-200 mb-2">Predictive Insights</p>
                                 <h1 className="text-4xl md:text-5xl font-black text-white">Boston House Price AI</h1>
-                                <p className="text-slate-300 mt-3 max-w-2xl">Explore how room counts, socioeconomic status, and classroom ratios influence property values. Adjust the sliders to see live, model-backed estimates.</p>
+                                <p className="text-slate-200 mt-3 max-w-2xl">Adjust the environmental and socioeconomic levers that most influence median Boston home values. Every slider is backed by coefficients learned directly from the dataset bundled with this app.</p>
                             </div>
-                            <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3 shadow-lg">
-                                <div className="h-12 w-12 rounded-full bg-indigo-500/30 border border-indigo-300/40 grid place-items-center text-indigo-100 font-black">AI</div>
+                            <div className="flex items-center gap-4 bg-white/5 border border-cyan-400/20 rounded-xl px-4 py-3 shadow-lg">
+                                <div className="h-12 w-12 rounded-full bg-cyan-500/30 border border-cyan-300/40 grid place-items-center text-cyan-100 font-black">AI</div>
                                 <div>
-                                    <p className="text-sm text-indigo-200">Powered by linear regression</p>
-                                    <p className="text-white font-semibold">Trained on Boston housing data</p>
+                                    <p className="text-sm text-cyan-200">Linear regression, transparent weights</p>
+                                    <p className="text-white font-semibold">Trained on the included Boston housing data</p>
                                 </div>
                             </div>
                         </header>
@@ -98,57 +104,57 @@
                                         description="Higher percentages of lower status population typically reduce value."
                                     />
                                     <FactorControl
-                                        label="Student-Teacher Ratio"
-                                        name="ptratio"
-                                        min={12}
-                                        max={22}
-                                        step={0.5}
-                                        suffix=""
-                                        description="Smaller classroom sizes can support higher prices."
+                                        label="Nitric Oxide Concentration"
+                                        name="nox"
+                                        min={0.35}
+                                        max={0.9}
+                                        step={0.01}
+                                        suffix=" ppm"
+                                        description="Higher NOx levels usually coincide with urban density and lower valuations."
                                     />
                                     <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-400/30 shadow-inner space-y-2">
                                         <p className="text-sm font-semibold text-indigo-100">Model Signal</p>
                                         <ul className="text-xs text-indigo-50 space-y-1">
                                             <li>• Rooms add value: <span className="font-semibold">+{weights.rm}k</span> each</li>
                                             <li>• Lower status share subtracts: <span className="font-semibold">{weights.lstat}k</span> per %</li>
-                                            <li>• Classroom ratio impact: <span className="font-semibold">{weights.ptratio}k</span> per student</li>
+                                            <li>• NOx impact: <span className="font-semibold">{weights.nox}k</span> per ppm</li>
                                         </ul>
                                         <p className="text-xs text-indigo-200">Intercept: {weights.intercept}k baseline before adjustments.</p>
                                     </div>
                                 </div>
                                 <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-slate-100 shadow-xl">
                                     <div className="flex items-center justify-between">
-                                        <p className="text-sm text-slate-300">Confidence Insight</p>
-                                        <span className="px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-100 text-xs font-semibold">Live preview</span>
+                                        <p className="text-sm text-slate-200">Confidence Insight</p>
+                                        <span className="px-3 py-1 rounded-full bg-cyan-400/20 text-cyan-100 text-xs font-semibold">Live preview</span>
                                     </div>
                                     <p className="text-lg mt-2 text-white font-semibold">Adjust any factor to see how the model responds instantly.</p>
-                                    <p className="text-sm text-slate-300 mt-1">Because this is a simple linear regression, effects combine additively and are easy to interpret.</p>
+                                    <p className="text-sm text-slate-300 mt-1">This lightweight explorer uses the same coefficients calculated from the CSV in this repo—no hidden APIs or extra services.</p>
                                 </div>
                             </div>
 
                             <div className="lg:col-span-2">
-                                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-slate-900 p-6 shadow-2xl">
-                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.15),transparent_35%)]"></div>
-                                    <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_80%_10%,rgba(255,255,255,0.12),transparent_40%)]"></div>
+                                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 p-6 shadow-2xl">
+                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.12),transparent_35%)]"></div>
+                                    <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_80%_10%,rgba(94,234,212,0.1),transparent_40%)]"></div>
                                     <div className="relative z-10 space-y-4 text-white">
-                                        <p className="uppercase text-xs tracking-[0.25em] text-indigo-100">Estimated Value</p>
+                                        <p className="uppercase text-xs tracking-[0.25em] text-cyan-100">Estimated Value</p>
                                         <h2 className="text-6xl font-black drop-shadow-lg">${price.toFixed(2)}k</h2>
-                                        <p className="text-sm text-indigo-100">Projected median value for the specified parameters.</p>
+                                        <p className="text-sm text-cyan-100">Projected median value for the specified parameters.</p>
                                         <div className="grid grid-cols-2 gap-3 text-sm">
-                                            <div className="bg-white/10 rounded-xl p-3 border border-white/20">
-                                                <p className="text-indigo-100 text-xs uppercase tracking-wide">Current Mix</p>
+                                            <div className="bg-white/10 rounded-xl p-3 border border-cyan-200/20">
+                                                <p className="text-cyan-100 text-xs uppercase tracking-wide">Current Mix</p>
                                                 <p className="font-semibold">{inputs.rm} rooms</p>
-                                                <p className="text-indigo-100 text-xs">{inputs.ptratio}:1 students per teacher</p>
+                                                <p className="text-cyan-100 text-xs">{inputs.nox} ppm NOx</p>
                                             </div>
-                                            <div className="bg-white/10 rounded-xl p-3 border border-white/20">
-                                                <p className="text-indigo-100 text-xs uppercase tracking-wide">Socioeconomics</p>
+                                            <div className="bg-white/10 rounded-xl p-3 border border-cyan-200/20">
+                                                <p className="text-cyan-100 text-xs uppercase tracking-wide">Socioeconomics</p>
                                                 <p className="font-semibold">{inputs.lstat}% lower status</p>
-                                                <p className="text-indigo-100 text-xs">Population effect captured</p>
+                                                <p className="text-cyan-100 text-xs">Population effect captured</p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-3 bg-white/10 border border-white/20 rounded-xl p-3">
-                                            <span className="h-10 w-10 rounded-full bg-emerald-400/30 border border-emerald-300/40 grid place-items-center text-emerald-900 font-black">✓</span>
-                                            <p className="text-sm text-indigo-50">Simple, transparent model—great for quick scenario planning and explaining drivers to stakeholders.</p>
+                                        <div className="flex items-center gap-3 bg-white/10 border border-cyan-200/20 rounded-xl p-3">
+                                            <span className="h-10 w-10 rounded-full bg-cyan-400/30 border border-cyan-300/40 grid place-items-center text-cyan-900 font-black">✓</span>
+                                            <p className="text-sm text-indigo-50">Dark, focused view with on-device calculations for quick scenario planning.</p>
                                         </div>
                                     </div>
                                 </div>
