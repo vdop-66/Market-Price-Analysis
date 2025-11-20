@@ -22,7 +22,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-gray-50 min-h-screen">
     <div id="root"></div>
     <script type="text/babel">
         const App = () => {
@@ -37,19 +37,122 @@
 
             const handleChange = (e) => setInputs({ ...inputs, [e.target.name]: parseFloat(e.target.value) });
 
+            const FactorControl = ({ label, name, min, max, step, suffix, description }) => (
+                <div className="p-4 rounded-xl bg-white/5 border border-white/10 shadow-inner">
+                    <div className="flex items-center justify-between text-sm mb-2">
+                        <p className="font-semibold text-white">{label}</p>
+                        <span className="text-indigo-300 font-bold">{inputs[name]}{suffix}</span>
+                    </div>
+                    <input
+                        type="range"
+                        name={name}
+                        min={min}
+                        max={max}
+                        step={step}
+                        value={inputs[name]}
+                        onChange={handleChange}
+                        className="w-full h-2 bg-slate-800/70 rounded-lg appearance-none cursor-pointer slider-thumb"
+                    />
+                    <p className="text-xs text-slate-300 mt-2">{description}</p>
+                </div>
+            );
+
             return (
-                <div className="min-h-screen flex items-center justify-center p-6">
-                    <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col md:flex-row gap-8">
-                        <div className="w-full md:w-1/2 space-y-6">
-                            <h1 className="text-2xl font-bold text-indigo-600">AI Real Estate</h1>
-                            <p className="text-sm text-gray-500">Adjust the factors to predict the home value.</p>
-                            <div><label className="block text-sm font-bold mb-1">Rooms ({inputs.rm})</label><input type="range" name="rm" min="3" max="9" step="0.1" value={inputs.rm} onChange={handleChange} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"/></div>
-                            <div><label className="block text-sm font-bold mb-1">Lower Status Pop. ({inputs.lstat}%)</label><input type="range" name="lstat" min="1" max="40" step="0.5" value={inputs.lstat} onChange={handleChange} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"/></div>
-                            <div><label className="block text-sm font-bold mb-1">Student-Teacher Ratio ({inputs.ptratio})</label><input type="range" name="ptratio" min="12" max="22" step="0.5" value={inputs.ptratio} onChange={handleChange} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"/></div>
-                        </div>
-                        <div className="w-full md:w-1/2 bg-indigo-600 rounded-xl text-white flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
-                            <div className="z-10"><p className="uppercase tracking-widest text-xs opacity-75 mb-2">Estimated Value</p><h2 className="text-5xl font-bold">${price.toFixed(2)}k</h2><p className="text-xs opacity-50 mt-4">Based on Historical Boston Data</p></div>
-                            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500 to-indigo-800 opacity-50"></div>
+                <div className="relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.25),_transparent_30%)]" aria-hidden></div>
+                    <div className="max-w-6xl mx-auto px-6 py-10 relative z-10">
+                        <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
+                            <div>
+                                <p className="uppercase tracking-[0.25em] text-xs text-indigo-200 mb-2">Predictive Insights</p>
+                                <h1 className="text-4xl md:text-5xl font-black text-white">Boston House Price AI</h1>
+                                <p className="text-slate-300 mt-3 max-w-2xl">Explore how room counts, socioeconomic status, and classroom ratios influence property values. Adjust the sliders to see live, model-backed estimates.</p>
+                            </div>
+                            <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-4 py-3 shadow-lg">
+                                <div className="h-12 w-12 rounded-full bg-indigo-500/30 border border-indigo-300/40 grid place-items-center text-indigo-100 font-black">AI</div>
+                                <div>
+                                    <p className="text-sm text-indigo-200">Powered by linear regression</p>
+                                    <p className="text-white font-semibold">Trained on Boston housing data</p>
+                                </div>
+                            </div>
+                        </header>
+
+                        <div className="grid lg:grid-cols-5 gap-6 items-start">
+                            <div className="lg:col-span-3 space-y-4">
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <FactorControl
+                                        label="Average Rooms per Dwelling"
+                                        name="rm"
+                                        min={3}
+                                        max={9}
+                                        step={0.1}
+                                        suffix=" rooms"
+                                        description="More rooms tend to raise the estimated home value."
+                                    />
+                                    <FactorControl
+                                        label="Lower Status Population"
+                                        name="lstat"
+                                        min={1}
+                                        max={40}
+                                        step={0.5}
+                                        suffix="%"
+                                        description="Higher percentages of lower status population typically reduce value."
+                                    />
+                                    <FactorControl
+                                        label="Student-Teacher Ratio"
+                                        name="ptratio"
+                                        min={12}
+                                        max={22}
+                                        step={0.5}
+                                        suffix=""
+                                        description="Smaller classroom sizes can support higher prices."
+                                    />
+                                    <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-400/30 shadow-inner space-y-2">
+                                        <p className="text-sm font-semibold text-indigo-100">Model Signal</p>
+                                        <ul className="text-xs text-indigo-50 space-y-1">
+                                            <li>• Rooms add value: <span className="font-semibold">+{weights.rm}k</span> each</li>
+                                            <li>• Lower status share subtracts: <span className="font-semibold">{weights.lstat}k</span> per %</li>
+                                            <li>• Classroom ratio impact: <span className="font-semibold">{weights.ptratio}k</span> per student</li>
+                                        </ul>
+                                        <p className="text-xs text-indigo-200">Intercept: {weights.intercept}k baseline before adjustments.</p>
+                                    </div>
+                                </div>
+                                <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-slate-100 shadow-xl">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-sm text-slate-300">Confidence Insight</p>
+                                        <span className="px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-100 text-xs font-semibold">Live preview</span>
+                                    </div>
+                                    <p className="text-lg mt-2 text-white font-semibold">Adjust any factor to see how the model responds instantly.</p>
+                                    <p className="text-sm text-slate-300 mt-1">Because this is a simple linear regression, effects combine additively and are easy to interpret.</p>
+                                </div>
+                            </div>
+
+                            <div className="lg:col-span-2">
+                                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-slate-900 p-6 shadow-2xl">
+                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.15),transparent_35%)]"></div>
+                                    <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_80%_10%,rgba(255,255,255,0.12),transparent_40%)]"></div>
+                                    <div className="relative z-10 space-y-4 text-white">
+                                        <p className="uppercase text-xs tracking-[0.25em] text-indigo-100">Estimated Value</p>
+                                        <h2 className="text-6xl font-black drop-shadow-lg">${price.toFixed(2)}k</h2>
+                                        <p className="text-sm text-indigo-100">Projected median value for the specified parameters.</p>
+                                        <div className="grid grid-cols-2 gap-3 text-sm">
+                                            <div className="bg-white/10 rounded-xl p-3 border border-white/20">
+                                                <p className="text-indigo-100 text-xs uppercase tracking-wide">Current Mix</p>
+                                                <p className="font-semibold">{inputs.rm} rooms</p>
+                                                <p className="text-indigo-100 text-xs">{inputs.ptratio}:1 students per teacher</p>
+                                            </div>
+                                            <div className="bg-white/10 rounded-xl p-3 border border-white/20">
+                                                <p className="text-indigo-100 text-xs uppercase tracking-wide">Socioeconomics</p>
+                                                <p className="font-semibold">{inputs.lstat}% lower status</p>
+                                                <p className="text-indigo-100 text-xs">Population effect captured</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3 bg-white/10 border border-white/20 rounded-xl p-3">
+                                            <span className="h-10 w-10 rounded-full bg-emerald-400/30 border border-emerald-300/40 grid place-items-center text-emerald-900 font-black">✓</span>
+                                            <p className="text-sm text-indigo-50">Simple, transparent model—great for quick scenario planning and explaining drivers to stakeholders.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
